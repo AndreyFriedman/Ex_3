@@ -42,7 +42,7 @@ class DiGraph(GraphInterface):
         for i in self.nodesdict:
             if i == node_id:
                 return False
-        self.nodesdict[node_id] = NodeData()
+        self.nodesdict[node_id] = NodeData(node_id)
         self.MC = self.MC + 1
         self.nodes = self.nodes + 1
         return True

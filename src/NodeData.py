@@ -37,3 +37,7 @@ class NodeData:
         :return:
         '''
         self.out_neighbors.clear()
+    def __str__(self) -> str:
+        return f"[{self.key}]"
+    def __repr__(self) -> str:
+        return self.__str__()
