@@ -4,12 +4,12 @@ from NodeData import NodeData
 
 class DiGraph(GraphInterface):
 
-    def __init__(self, nodes = 0, edges = 0, nodesdict = {}, posdict = {}):
-        self.nodes = nodes
-        self.edges = edges
+    def __init__(self):
+        self.nodes = 0
+        self.edges = 0
         self.MC = 0
-        self.nodesdict = nodesdict
-        self.posdict = posdict
+        self.nodesdict = {}
+        self.posdict = {}
 
 
     def v_size(self):
@@ -34,6 +34,7 @@ class DiGraph(GraphInterface):
         if id1 == id2 or weight == 0:
             return False
         self.nodesdict[id1].setOutNeighbors(id2, weight)
+        self.nodesdict[id2].in_neighbors[id1] = weight
         self.MC = self.MC + 1
         self.edges = self.edges + 1
         return True
@@ -50,21 +51,52 @@ class DiGraph(GraphInterface):
     def remove_node(self, node_id: int):
         if node_id not in self.nodesdict:
             return False
-
-        self.nodesdict[node_id].clearOutNeighbors()
         for i in self.nodesdict:
             if node_id in self.nodesdict[i].out_neighbors:
                 del(self.nodesdict[i].out_neighbors[node_id])
                 self.MC = self.MC + 1
                 self.edges = self.edges - 1
+        for i in self.nodesdict[node_id].in_neighbors:
+            del self.nodesdict[i].in_neighbors[node_id]
+            self.MC+=1
+            self.edges-=1
         self.nodes = self.nodes - 1
+        del self.nodesdict[node_id]
+        self.MC+=1
         return True
 
     def remove_edge(self, node_id1: int, node_id2: int):
-        for neigh in self.nodesdict[node_id1].out_neighbors:
-            if neigh == node_id2:
-                del(self.nodesdict[node_id1].out_neighbors[neigh])
-                self.MC = self.MC + 1
-                self.edges = self.edges - 1
-                return True
-        return False
+        if node_id1 not in self.nodesdict or node_id2 not in self.nodesdict:
+            return False
+        node1 = self.nodesdict[node_id1]
+        node2 = self.nodesdict[node_id2]
+        if node_id2 in node1.out_neighbors:
+            del node1.out_neighbors[node_id2]
+        else:
+            return False
+        if node_id1 in node2.in_neighbors:
+            del node2.in_neighbors[node_id1]
+        else:
+            return False
+        self.MC = self.MC + 1
+        self.edges = self.edges - 1
+        return True
+    def __eq__(self, o: object) -> bool:
+        if(isinstance(o,DiGraph)):
+            for i in o.nodesdict:
+                node = o.nodesdict[i]
+                if isinstance(node,NodeData):
+                    if (node != self.nodesdict.get(node.key)):
+                        return False
+                else:
+                    return False
+            for i in self.nodesdict:
+                node = self.nodesdict[i]
+                if isinstance(node,NodeData):
+                    if (node != o.nodesdict.get(node.key)):
+                        return False
+                else:
+                    return False
+            return True
+        else:
+            return False
