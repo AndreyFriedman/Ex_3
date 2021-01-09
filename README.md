@@ -4,6 +4,8 @@
 
 EX3 is a project created for an assignment for Object Oriented Programming course in Ariel University. In this project we are going to take several graphs, Java alghoritms(that we took from EX2), Python algorithms(we created them for this project) and NetworkX algorithms and compare which algorithm has better running time for same functions.
 
+The graphs we are going to use to compare between the algorithm are in the folder "Graphs_no_pos"
+
 
 
 ## Java Algorithms
