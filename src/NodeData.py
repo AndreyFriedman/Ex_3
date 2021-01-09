@@ -3,7 +3,7 @@ class NodeData:
     def __init__(self, key = 0, tag = 0):
         self.key = key # store key 
         self.tag = tag # store tag
-        self.in_neighbors = {} 
+        self.in_neighbors = {} # dictionary of int(id) and float(weight)
         self.out_neighbors = {} # dictionary of int(id) and float(weight)
 
     def getKey(self):

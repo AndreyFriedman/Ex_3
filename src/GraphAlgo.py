@@ -10,8 +10,7 @@ from copy import deepcopy
 class GraphAlgo(GraphAlgoInterface, DiGraph):
 
     def __init__(self, g : DiGraph = None):
-        self.graph = g
-        self.gT = None
+        self.graph = g # creating the graph tha can use the algorithms
 
     def get_graph(self):
         '''
@@ -119,7 +118,7 @@ class GraphAlgo(GraphAlgoInterface, DiGraph):
 
     def transpose(self)->DiGraph:
         """
-        This function is taking the graph and returning the tramspose graph.
+        This function is taking the graph and returning the transpose graph.
         @return the transpose graph.
         """
         if(self.graph and isinstance(self.graph,DiGraph)): # check if graph is not none 
@@ -189,6 +188,9 @@ class GraphAlgo(GraphAlgoInterface, DiGraph):
         
 
     def plot_graph(self):
+        '''
+        drawing the graph, the nodes and arrows between them
+        '''
         x_vals = [] # array with x coordinates
         y_vals = [] # array with y coordinates
         if self.graph.posdict == {}: # if we dont get positions for nodes
