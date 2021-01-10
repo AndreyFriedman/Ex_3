@@ -349,11 +349,11 @@ public class DWGraph_Algo implements dw_graph_algorithms {
     public static void main(String[] args) {
 
         DWGraph_Algo ga = new DWGraph_Algo();
-        File fol = new File("./testgraphs");
+        File fol = new File("./Graph_no_pos");
         String files [] = fol.list();
         for (String f : files)
         {
-            ga.load("./testgraphs/"+f);
+            ga.load("./Graph_no_pos/"+f);
             long start =  System.currentTimeMillis();
             ga.SCCS(ga.g);
             System.out.println(f+"  "+(System.currentTimeMillis()-start));

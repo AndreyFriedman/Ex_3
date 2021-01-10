@@ -13,12 +13,12 @@ def timefunc(func:Callable,*args)->float:
     func(*args)
     return time() - start
 
-l = listdir("./testgraphs")
+l = listdir("./Graph_no_pos")
 
 ga = GraphAlgo()
 times = {}
 for file in l:
-    ga.load_from_json("./testgraphs/"+file)
+    ga.load_from_json("./Graph_no_pos/"+file)
     g = nx.DiGraph()
     for i in ga.graph.nodesdict:
         g.add_node(i)
