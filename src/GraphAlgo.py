@@ -32,7 +32,7 @@ class GraphAlgo(GraphAlgoInterface, DiGraph):
             for i in data["Nodes"]: # go through Nodes dict 
                 self.graph.add_node(i["id"]) # add node the graph
                 if "pos" in i: # if we have position then save them
-                    self.graph.posdict[i["id"]] = i["pos"] # place the position from the dict in the graph 
+                    self.graph.posdict[i["id"]] = i["pos"] # place the position from the dict in the graph
             for i in data["Edges"]: # go through edges 
                 self.graph.add_edge(i["src"], i["dest"], i["w"]) # connect the edges with weight 
             return True # return true since success
@@ -69,53 +69,45 @@ class GraphAlgo(GraphAlgoInterface, DiGraph):
         :param id2:
         :return:
         '''
-        distance = float("inf") # distance between 2 nodes
-        distance_start: float # distance of every node from the start
-        distance_list = [] # the list of ints that will return in the end
-        nodes_queue = [] # queue that will go through all the nodes in the graph
-        distance_dic = {} # represents the distance from start to specific node
-        distance_dic[id2] = -1 # if it will not change that means that there is no way from id1 to id2
-        list_dic = {} # represents the list to every node from start
-
-        if self.graph.v_size() == 0 or self.graph.e_size() == 0: # if the graph is empty
-            return distance, distance_list
-        if id1 not in self.graph.nodesdict or id2 not in self.graph.nodesdict: # if id1 or id2 dont exist
-            return distance, distance_list
-        if id1 == id2: # if id1 and id2 is the same node
-            return 0, [id1]
-
-        for i in self.graph.nodesdict: # setting all the distances to the start to be -1 so you can know if you already visited this node or not
-            self.graph.nodesdict[i].tag = -1
-
-        self.graph.nodesdict[id1].tag = 0 #distance_dic[id1] = 0
-        list_dic[id1] = [id1]
-        nodes_queue.append(self.graph.nodesdict[id1])
-
-        while  len(nodes_queue)>0:
-            nodes_queue.sort(key=lambda x:x.tag)
-            n = nodes_queue.pop()
-            for i in n.out_neighbors: # going through the neighbors of n
-                distance = n.out_neighbors[i] # getting the distance between n and i
-                distance_start =n.tag + distance # getting the distance from id1 to i
-
-                if self.graph.nodesdict[i].tag == -1: # or distance_dic[i] > distance_start:
-                    self.graph.nodesdict[i].tag = distance_start # putting the better distance from the start
-                    list_dic[i] = deepcopy(list_dic[n.key]) # adding the neighbor to the list
-                    list_dic[i].append(i)
-                    nodes_queue.append(self.graph.nodesdict[i]) # placing the neighbor to the queue
-                if self.graph.nodesdict[i].tag >distance_start: # finding a better path 
-                    self.graph.nodesdict[i].tag = distance_start # set new tag 
-                    list_dic[i] = deepcopy(list_dic[n.key]) # copy array using deepcopy form copy module 
-                    list_dic[i].append(i) # append i since it's one step forward 
-                    if (self.graph.nodesdict[i] not in nodes_queue): # if node not in the queue add it to there
-                        nodes_queue.append(self.graph.nodesdict[i])
-        if self.graph.nodesdict[id2].tag == -1: # that means there is no path between id1 to id2
-            distance = float("inf")
-            return distance, distance_list
-
-        # if we came to here that means that everything is fine and we have distance between id1 and id2
-        distance_list.append(list_dic[id2]) # set the list that we want to return as the list that going from id1 to id2
-        return self.graph.nodesdict[id2].tag, list_dic[id2] # return answer
+        if not self.graph:
+            return float('inf'),[]
+        if id1 in self.graph.nodesdict and id2 in self.graph.nodesdict:
+            src = self.graph.nodesdict[id1]
+            dest = self.graph.nodesdict[id2]
+            parent = {} # parent dictionary 
+            stack = [src] # init the stack with the src
+            for key in self.graph.nodesdict: # iterate over nodes and set weights to -1
+                self.graph.nodesdict[key].tag = -1
+            src.tag = 0 # set src weight to 0
+            while(len(stack)!=0): # as long as the stack isn't empty 
+                node = stack.pop() # pop a node out of the stack 
+                node:NodeData
+                for ni_key in node.out_neighbors: # iterate over the edges that go out of the node
+                    if self.graph.nodesdict[ni_key].tag == -1: #node.neighbors[ni_key].weight == -1: #means we never reached it
+                        self.graph.nodesdict[ni_key].tag = node.out_neighbors[ni_key]+node.tag
+                        stack.append(self.graph.nodesdict[ni_key])
+                        stack.sort(key=lambda x: x.tag,reverse=True)
+                        parent[ni_key] = node.key
+                    elif self.graph.nodesdict[ni_key].tag > node.out_neighbors[ni_key]+node.tag:   
+                        self.graph.nodesdict[ni_key].tag = node.out_neighbors[ni_key]+node.tag
+                        stack.sort(key=lambda x: x.tag,reverse=True)
+                        parent[ni_key] = node.key
+            # once finished the algorithm 
+            # should check if we reached the dest 
+            # check if dest is in parent dict
+            if parent.get(dest.key) == None: # means we never reached it 
+                #thus return None
+                return float("inf"),[]
+            else: # means we reached it so we should trace the path back 
+                n = dest.key
+                l = []
+                while(parent[n]!=src.key):
+                    l.append(n)
+                    n = parent[n]
+                l.append(n)
+                l.append(parent[n])
+                l.reverse()
+                return (dest.tag,l)
 
     def transpose(self)->DiGraph:
         """
@@ -143,11 +135,13 @@ class GraphAlgo(GraphAlgoInterface, DiGraph):
             DFS algorithm implementation inside the scc function since it's used only here.
             @return none since it's an algorithm
             """
-            node = graph.nodesdict[v] 
-            node.tag = 1
-            for out in node.out_neighbors:
-                if(graph.nodesdict[out].tag == 0):
-                    dfs(out,graph)
+            s = [v]
+            while len(s)>0:
+                node = s.pop()
+                if(graph.nodesdict[node].tag == 0):
+                    graph.nodesdict[node].tag = 1
+                    for n in graph.nodesdict[node].out_neighbors:
+                        s.append(n)
         #######################################
         if(self.graph and isinstance(self.graph,DiGraph)): # if there is a graph and not none 
             if id1 not in self.graph.nodesdict:# if the node is not in the graph 
@@ -198,7 +192,7 @@ class GraphAlgo(GraphAlgoInterface, DiGraph):
                     x_ran = random.uniform(35, 36)
                 y_ran = random.uniform(32,33) # make a random y coordinate
                 while not self.checkGoodRandomSpawning(self.graph.posdict, y_ran, False): # if its too close to another one make a new coordinate
-                    y_ran = random.uniform(35, 36)
+                    y_ran = random.uniform(32, 33)
                 str_pos = str(x_ran) + "," + str(y_ran) # string of the randomed positions
                 self.graph.posdict[i] = str_pos # saving the position in dictionary of positions
                 x_vals.append(x_ran) # place in the array

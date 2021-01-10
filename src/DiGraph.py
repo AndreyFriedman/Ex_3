@@ -33,16 +33,15 @@ class DiGraph(GraphInterface):
     def add_edge(self, id1: int, id2: int, weight: float):
         if id1 == id2 or weight == 0:
             return False
-        self.nodesdict[id1].setOutNeighbors(id2, weight)
+        self.nodesdict[id1].out_neighbors[id2] =  weight
         self.nodesdict[id2].in_neighbors[id1] = weight
         self.MC = self.MC + 1
         self.edges = self.edges + 1
         return True
 
     def add_node(self, node_id: int, pos: tuple = None):
-        for i in self.nodesdict:
-            if i == node_id:
-                return False
+        if node_id in self.nodesdict:
+            return False
         self.nodesdict[node_id] = NodeData(node_id)
         self.MC = self.MC + 1
         self.nodes = self.nodes + 1
