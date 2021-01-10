@@ -5,11 +5,11 @@ from NodeData import NodeData
 class DiGraph(GraphInterface):
 
     def __init__(self):
-        self.nodes = 0
-        self.edges = 0
-        self.MC = 0
-        self.nodesdict = {}
-        self.posdict = {}
+        self.nodes = 0 # number of nodes in the graph
+        self.edges = 0 # number of edges in the graph
+        self.MC = 0 # number of made acctions
+        self.nodesdict = {} # dictionary of the nodes in the graph
+        self.posdict = {} # the position of every node in the graph
 
 
     def v_size(self):
