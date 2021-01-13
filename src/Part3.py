@@ -13,12 +13,12 @@ def timefunc(func:Callable,*args)->float:
     func(*args)
     return time() - start
 
-l = listdir("./Graph_no_pos")
+l = listdir("./graphs")
 
 ga = GraphAlgo()
 times = {}
 for file in l:
-    ga.load_from_json("./Graph_no_pos/"+file)
+    ga.load_from_json("./graphs/"+file)
     g = nx.DiGraph()
     for i in ga.graph.nodesdict:
         g.add_node(i)
@@ -30,9 +30,10 @@ for file in l:
     #     print(nx.dijkstra_path(g,1,10))
     # except nx.NetworkXNoPath as e:
     #     print("no path",e)
-    #
-    #ga.shortest_path(1,10)
-    # ga.connected_components()
+    
+    #print(ga.shortest_path(1,10))
+    #ga.connected_component(0)
+    #ga.connected_components()
     t = a.strongly_connected.strongly_connected_components(g)
     times[file] = time()-s
 for i in times:
