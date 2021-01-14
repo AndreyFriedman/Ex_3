@@ -53,11 +53,9 @@ class DiGraph(GraphInterface):
         for i in self.nodesdict:
             if node_id in self.nodesdict[i].out_neighbors:
                 del(self.nodesdict[i].out_neighbors[node_id])
-                self.MC = self.MC + 1
                 self.edges = self.edges - 1
         for i in self.nodesdict[node_id].in_neighbors:
             del self.nodesdict[i].in_neighbors[node_id]
-            self.MC+=1
             self.edges-=1
         self.nodes = self.nodes - 1
         del self.nodesdict[node_id]
